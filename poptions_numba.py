@@ -12,8 +12,7 @@ from numba import jit, prange
 
 # @jit(nopython=True, cache=True, parallel=True)
 @jit(nopython=True, cache=True)
-def poptions_numba(underlying, rate, sigma, DTE, closing_DTE, nTrials, initial_credit, denom,
-             max_loss, min_profit, roi, strikes, contracts, bsm_func):
+def poptions_numba(underlying, rate, sigma, DTE, closing_DTE, trials, initial_credit, min_profit, strikes, bsm_func):
 
     dt = 1 / 365  # 365 calendar days in a year
     # dt = 1 / 252  # 252 trading days in a year
@@ -30,16 +29,16 @@ def poptions_numba(underlying, rate, sigma, DTE, closing_DTE, nTrials, initial_c
 
     counter1 = [0] * length
     profit_dte = [0] * length
-    # profit_dte_history = np.zeros([length, nTrials]) # Numba doesn't like it this way (StackOverflow)
-    profit_dte_history = np.zeros((length, nTrials))
+    # profit_dte_history = np.zeros([length, trials]) # Numba doesn't like it this way (StackOverflow)
+    profit_dte_history = np.zeros((length, trials))
 
     epsilon_cum = 0
     t_cum = 0
     indices = [0] * length
 
     # Calculating option prices
-    for c in range(nTrials):
-    # for c in prange(nTrials):
+    for c in range(trials):
+    # for c in prange(trials):
 
         for i in range(length):
             indices[i] = 0
@@ -96,12 +95,12 @@ def poptions_numba(underlying, rate, sigma, DTE, closing_DTE, nTrials, initial_c
         epsilon_cum = 0
         t_cum = 0
 
-    pop_counter1 = [c / nTrials * 100 for c in counter1]
+    pop_counter1 = [c / trials * 100 for c in counter1]
     pop_counter1 = [round(x, 2) for x in pop_counter1]
 
     # print("pop_counter1: ", pop_counter1)
 
-    pop_counter1_err = [2.58 * (x * (100 - x) / nTrials) ** (1 / 2) for x in pop_counter1]
+    pop_counter1_err = [2.58 * (x * (100 - x) / trials) ** (1 / 2) for x in pop_counter1]
     pop_counter1_err = [round(x, 2) for x in pop_counter1_err]
 
     # print("pop_counter1_err: ", pop_counter1_err)

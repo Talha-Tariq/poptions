@@ -1,44 +1,47 @@
-from CallCreditSpread_modified import callCreditSpread
-from PutCreditSpread_modified import putCreditSpread
-from CallDebitSpread_modified import callDebitSpread
-from PutDebitSpread_modified import putDebitSpread
-from ShortPut_modified import shortPut
-from ShortCall_modified import shortCall
-from LongPut_modified import longPut
-from LongCall_modified import longCall
-from CoveredCall_modified import coveredCall
-from IronCondor_modified import ironCondor
-from ShortStrangle_modified import shortStrangle
+from CallCreditSpread import callCreditSpread
+from PutCreditSpread import putCreditSpread
+from CallDebitSpread import callDebitSpread
+from PutDebitSpread import putDebitSpread
+from ShortPut import shortPut
+from ShortCall import shortCall
+from LongPut import longPut
+from LongCall import longCall
+from CoveredCall import coveredCall
+from IronCondor import ironCondor
+from ShortStrangle import shortStrangle
 
 
 # TO DO:
-# don't need contracts
+# Add all functions to 1 file and call poptions from there?
 # Change variable names like DTE since they dont make sense now
 # data validation step
 # rearrange function variable order so that master vars are first for convenience
 # verify outputs with thetapopper
-# Note that entering existing trades not possible for CC
-# More comments?
+# Note that entering existing trades not possible for CC somewhere in repo
+# How to enable/disable numba?
+# Edit and More comments? What goes in README?
+    # entering existing trades?
+    # definition of DTE and closing days?
+    # Sources for POP and error calc?
 
 ################################################################
 
-underlying = 137.31     # current underlying price
-short_strike = 145
-short_price = 1.13     # short call price(credit)
-long_strike = 150
-long_price = 0      # long call price(debit)
-rate = 0               # risk free annual rate as a decimal
-sigma = 26.8      # IV as a fraction (see note in: ***)
-DTE = 45               # Days To Expiration
-fraction = [20, 30, 40, 50]
-# fraction = [45]
-closing_DTE = [21, 21, 21, 21]  # DTE when the trade is closed
-# closing_DTE = [21]
-nTrials = 2000         # Number of independent trials / simulations
-contracts = 1
-
-print("Call Credit Spread: ", callCreditSpread(nTrials, short_strike, short_price, long_strike, long_price,
-                     underlying, rate, sigma, DTE, fraction, closing_DTE, contracts))
+# underlying = 137.31     # current underlying price
+# short_strike = 145
+# short_price = 1.13     # short call price(credit)
+# long_strike = 150
+# long_price = 0      # long call price(debit)
+# rate = 0               # risk free annual rate as a decimal
+# sigma = 26.8      # IV as a fraction (see note in: ***)
+# DTE = 45               # Days To Expiration
+# fraction = [20, 30, 40, 50]
+# # fraction = [45]
+# closing_DTE = [21, 21, 21, 21]  # DTE when the trade is closed
+# # closing_DTE = [21]
+# trials = 2000         # Number of independent trials / simulations
+#
+# print("Call Credit Spread: ", callCreditSpread(trials, short_strike, short_price, long_strike, long_price,
+#                                                underlying, rate, sigma, DTE, fraction, closing_DTE))
 
 ################################################################
 
@@ -52,11 +55,10 @@ print("Call Credit Spread: ", callCreditSpread(nTrials, short_strike, short_pric
 # DTE = 51  # Days To Expiration
 # fraction = [75, 50]  # Desired minimum percentage of max profit as a fraction
 # closing_DTE = [21, 24]  # DTE when the trade is closed
-# nTrials = 2000  # Number of independent trials / simulations
-# contracts = 1
+# trials = 2000  # Number of independent trials / simulations
 #
-# print("Put Credit Spread: ", putCreditSpread(nTrials, short_strike, short_price, long_strike, long_price,
-#                      underlying, rate, sigma, DTE, fraction, closing_DTE, contracts))
+# print("Put Credit Spread: ", putCreditSpread(trials, short_strike, short_price, long_strike, long_price,
+#                      underlying, rate, sigma, DTE, fraction, closing_DTE))
 
 ################################################################
 
@@ -70,11 +72,10 @@ print("Call Credit Spread: ", callCreditSpread(nTrials, short_strike, short_pric
 # DTE = 48               # Days To Expiration
 # fraction = [20]   # Desired minimum percentage of max profit as a fraction
 # closing_DTE = [48]       # DTE when the trade is closed
-# nTrials = 2000         # Number of independent trials / simulations
-# contracts = 1
+# trials = 2000         # Number of independent trials / simulations
 #
-# print("Call Debit Spread: ", callDebitSpread(nTrials, short_strike, short_price, long_strike, long_price,
-#                      underlying, rate, sigma, DTE, fraction, closing_DTE, contracts))
+# print("Call Debit Spread: ", callDebitSpread(trials, short_strike, short_price, long_strike, long_price,
+#                      underlying, rate, sigma, DTE, fraction, closing_DTE))
 
 ################################################################
 
@@ -88,11 +89,10 @@ print("Call Credit Spread: ", callCreditSpread(nTrials, short_strike, short_pric
 # DTE = 48               # Days To Expiration
 # fraction = [50]     # Desired minimum percentage of max profit as a fraction
 # closing_DTE = [48]       # DTE when the trade is closed
-# nTrials = 2000         # Number of independent trials / simulations
-# contracts = 1
+# trials = 2000         # Number of independent trials / simulations
 #
-# print("Put Debit Spread: ", putDebitSpread(nTrials, short_strike, short_price, long_strike, long_price,
-#                      underlying, rate, sigma, DTE, fraction, closing_DTE, contracts))
+# print("Put Debit Spread: ", putDebitSpread(trials, short_strike, short_price, long_strike, long_price,
+#                      underlying, rate, sigma, DTE, fraction, closing_DTE))
 
 ################################################################
 
@@ -104,27 +104,25 @@ print("Call Credit Spread: ", callCreditSpread(nTrials, short_strike, short_pric
 # DTE = 45                # Days To Expiration
 # fraction = [50]     # Desired minimum percentage of max profit as a fraction
 # closing_DTE = [21]        # DTE when the trade is closed
-# nTrials = 2000          # Number of independent trials/simulations
-# contracts = 1
+# trials = 2000          # Number of independent trials/simulations
 #
-# print("Short Put: ", shortPut(nTrials, short_strike, short_price,
-#                      underlying, rate, sigma, DTE, fraction, closing_DTE, contracts))
+# print("Short Put: ", shortPut(trials, short_strike, short_price,
+#                      underlying, rate, sigma, DTE, fraction, closing_DTE))
 
 ################################################################
 
-# underlying = 71.72         # current underlying price
-# short_strike = 90           # strike price
-# short_price = 1.16         # current call option price
-# rate = 0                # risk free annual rate as a decimal
-# sigma = 55     # IV as a fraction (see note in: ***)
-# DTE = 53                # Days To Expiration
-# fraction = [50]     # Desired minimum percentage of max profit as a fraction
-# closing_DTE = [36]        # DTE when the trade is closed
-# nTrials = 2000          # Number of independent trials/simulations
-# contracts = 1
-#
-# print("Short Call: ", shortCall(nTrials, short_strike, short_price,
-#                      underlying, rate, sigma, DTE, fraction, closing_DTE, contracts))
+underlying = 71.72         # current underlying price
+short_strike = 90           # strike price
+short_price = 1.16         # current call option price
+rate = 0                # risk free annual rate as a decimal
+sigma = 55     # IV as a fraction (see note in: ***)
+DTE = 53                # Days To Expiration
+fraction = [50]     # Desired minimum percentage of max profit as a fraction
+closing_DTE = [36]        # DTE when the trade is closed
+trials = 2000          # Number of independent trials/simulations
+
+print("Short Call: ", shortCall(trials, short_strike, short_price,
+                     underlying, rate, sigma, DTE, fraction, closing_DTE))
 
 ################################################################
 
@@ -136,11 +134,10 @@ print("Call Credit Spread: ", callCreditSpread(nTrials, short_strike, short_pric
 # DTE = 20
 # fraction = [1]
 # closing_DTE = [20]
-# nTrials = 2000
-# contracts = 1
+# trials = 2000
 #
-# print("Long Put: ", longPut(nTrials, long_strike, long_price,
-#                      underlying, rate, sigma, DTE, fraction, closing_DTE, contracts))
+# print("Long Put: ", longPut(trials, long_strike, long_price,
+#                      underlying, rate, sigma, DTE, fraction, closing_DTE))
 
 ################################################################
 
@@ -152,11 +149,10 @@ print("Call Credit Spread: ", callCreditSpread(nTrials, short_strike, short_pric
 # DTE = 20
 # fraction = [1]
 # closing_DTE = [20]
-# nTrials = 2000
-# contracts = 1
+# trials = 2000
 #
-# print("Long Call: ", longCall(nTrials, long_strike, long_price,
-#                      underlying, rate, sigma, DTE, fraction, closing_DTE, contracts))
+# print("Long Call: ", longCall(trials, long_strike, long_price,
+#                      underlying, rate, sigma, DTE, fraction, closing_DTE))
 
 ################################################################
 
@@ -168,11 +164,10 @@ print("Call Credit Spread: ", callCreditSpread(nTrials, short_strike, short_pric
 # DTE = 53                # Days To Expiration
 # fraction = [50]     # Desired minimum percentage of max profit as a fraction
 # closing_DTE = [36]        # DTE when the trade is closed
-# nTrials = 2000          # Number of independent trials/simulations
-# contracts = 1
+# trials = 2000          # Number of independent trials/simulations
 #
-# print("Covered Call: ", coveredCall(nTrials, short_strike, short_price,
-#                      underlying, rate, sigma, DTE, fraction, closing_DTE, contracts))
+# print("Covered Call: ", coveredCall(trials, short_strike, short_price,
+#                      underlying, rate, sigma, DTE, fraction, closing_DTE))
 
 ################################################################
 
@@ -182,7 +177,7 @@ print("Call Credit Spread: ", callCreditSpread(nTrials, short_strike, short_pric
 # DTE = 25               # Days To Expiration
 # fraction = [50]   # Desired minimum percentage of max profit as a fraction
 # closing_DTE = [25]       # DTE when the trade is closed
-# nTrials = 2000         # Number of independent trials / simulations
+# trials = 2000         # Number of independent trials / simulations
 #
 # ## PUT SIDE ###
 # put_short_strike = 170
@@ -196,12 +191,9 @@ print("Call Credit Spread: ", callCreditSpread(nTrials, short_strike, short_pric
 # call_long_strike = 255
 # call_long_price = 2.34      # long call price(debit)
 #
-# contracts = 1
-#
-# print(ironCondor(nTrials, call_short_strike, call_short_price, call_long_strike, call_long_price,
+# print(ironCondor(trials, call_short_strike, call_short_price, call_long_strike, call_long_price,
 #                     put_short_strike, put_short_price, put_long_strike, put_long_price,
-#                     underlying, rate, sigma, DTE, fraction, closing_DTE,
-#                     contracts))
+#                     underlying, rate, sigma, DTE, fraction, closing_DTE))
 
 ################################################################
 
@@ -217,8 +209,7 @@ print("Call Credit Spread: ", callCreditSpread(nTrials, short_strike, short_pric
 # # fraction = [20, 30, 40, 50]
 # closing_DTE = [24]
 # # closing_DTE = [21, 21, 21, 21]
-# nTrials = 2000
-# contracts = 1
+# trials = 2000
 #
-# print(shortStrangle(nTrials, call_strike, call_price, put_strike, put_price,
-#                      underlying, rate, sigma, DTE, fraction, closing_DTE, contracts))
+# print(shortStrangle(trials, call_strike, call_price, put_strike, put_price,
+#                      underlying, rate, sigma, DTE, fraction, closing_DTE))

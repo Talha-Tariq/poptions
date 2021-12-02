@@ -70,7 +70,7 @@ underlying_key = 'underlying'
 rate_key = 'riskfreerate'
 sigma_key = 'impliedvol'
 dte_key = 'dte'
-fraction_key = 'fraction'
+fraction_key = 'percentage_array'
 closing_dte_key = 'closingdte'
 contracts_key = 'contracts'
 # trials_key = 'trials'
@@ -162,7 +162,7 @@ def arr_limiting(args, dte_key, fraction_key, closing_dte_key, free_limit, gold_
 			return abort(400, message={closing_dte_key: "Closing date cannot be beyond Expiration date."})
 
 	if len(closing_DTE) != len(fraction):
-		return abort(400, message={closing_dte_key: "Closing DTE and Fraction array lengths must be equal."})
+		return abort(400, message={closing_dte_key: "Closing days_to_expiration and Fraction array lengths must be equal."})
 
 	try:
 		unverified_claims = jwt.get_unverified_claims(token)  # don't really need try catch if wrapper verifies token
@@ -474,12 +474,12 @@ api.add_resource(CoveredCall, "/api/simulate/coveredcall")
 # 	underlying = args[underlying_key]
 # 	rate = args[rate_key]
 # 	sigma = args[sigma_key]
-# 	DTE = args[dte_key]
-# 	fraction = args[fraction_key]
-# 	closing_DTE = args[closing_dte_key]
+# 	days_to_expiration = args[dte_key]
+# 	percentage_array = args[fraction_key]
+# 	closing_days_array = args[closing_dte_key]
 # 	contracts = args[contracts_key]
 #
-# 	return underlying, rate, sigma, DTE, fraction, closing_DTE, contracts
+# 	return underlying, rate, sigma, days_to_expiration, percentage_array, closing_days_array, contracts
 
 # class Hello(Resource):
 # 	@requires_auth

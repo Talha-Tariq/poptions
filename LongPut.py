@@ -1,5 +1,5 @@
 from numba import jit
-from poptions_numba import poptions_numba
+from MonteCarloNumba import monteCarloNumba
 import time
 from import_bs import blackscholesput
 import numpy as np
@@ -15,41 +15,41 @@ def bsm_debit(sim_price, strikes, rate, time_fraction, sigma):
     return debit
 
 
-def longPut(trials, long_strike, long_price,
-            underlying, rate, sigma, DTE, fraction, closing_DTE):
+def longPut(underlying, sigma, rate, trials, days_to_expiration,
+            closing_days_array, multiple_array, long_strike, long_price):
+
+    for closing_days in closing_days_array:
+        if closing_days > days_to_expiration:
+            raise ValueError("Closing days cannot be beyond Days To Expiration.")
+
+    if len(closing_days_array) != len(multiple_array):
+        raise ValueError("closing_days_array and multiple_array sizes must be equal.")
 
     # SIMULATION
     initial_debit = long_price  # Debit paid from opening trade
     initial_credit = -1 * initial_debit
 
-    # fraction = [x / 100 for x in fraction] # Fraction is now pseudo-multiplier of debit paid
-    max_profit = long_strike - initial_debit
-    min_profit = [initial_debit * x for x in fraction]
+    min_profit = [initial_debit * x for x in multiple_array]
 
     strikes = [long_strike]
 
     # LISTS TO NUMPY ARRAYS CUZ NUMBA HATES LISTS
     strikes = np.array(strikes)
-    closing_DTE = np.array(closing_DTE)
+    closing_days_array = np.array(closing_days_array)
     min_profit = np.array(min_profit)
 
-    # start_numba = time.perf_counter()
-
     try:
-        pop, pop_error, avg_dte, avg_dte_err = poptions_numba(underlying, rate, sigma, DTE, closing_DTE, trials,
+        pop, pop_error, avg_dtc, avg_dtc_error = monteCarloNumba(underlying, rate, sigma, days_to_expiration,
+                                                              closing_days_array, trials,
                                                               initial_credit, min_profit, strikes, bsm_debit)
     except RuntimeError as err:
         print(err.args)
 
-    # end_numba = time.perf_counter()
-
-    # print("Time taken for Numba WITH COMPILATION: {}".format(end_numba - start_numba))
-
     response = {
         "pop": pop,
         "pop_error": pop_error,
-        "avg_days": avg_dte,
-        "avg_days_err": avg_dte_err
+        "avg_dtc": avg_dtc,
+        "avg_dtc_error": avg_dtc_error
     }
 
     return response

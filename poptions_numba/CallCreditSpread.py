@@ -1,27 +1,30 @@
 from numba import jit
-from MonteCarloNumba import monteCarloNumba
+from MonteCarlo import monteCarlo
 import time
-from import_bs import blackscholescall, blackscholesput
+from BlackScholes import blackscholescall
 import numpy as np
 
 
 @jit(nopython=True, cache=True)
 def bsm_debit(sim_price, strikes, rate, time_fraction, sigma):
     P_short_calls = blackscholescall(sim_price, strikes[0], rate, time_fraction, sigma)
-    P_short_puts = blackscholesput(sim_price, strikes[1], rate, time_fraction, sigma)
+    P_long_calls = blackscholescall(sim_price, strikes[1], rate, time_fraction, sigma)
 
-    debit = P_short_calls + P_short_puts
+    debit = P_short_calls - P_long_calls
 
     return debit
 
 
-def shortStrangle(underlying, sigma, rate, trials, days_to_expiration,
-                  closing_days_array, percentage_array, call_short_strike,
-                  call_short_price, put_short_strike, put_short_price):
+def callCreditSpread(underlying, sigma, rate, trials, days_to_expiration,
+                     closing_days_array, percentage_array, short_strike,
+                     short_price, long_strike, long_price):
 
     # Data Verification
-    if call_short_strike < put_short_strike:
-        raise ValueError("Call Strike cannot be less than Put Strike")
+    if long_price >= short_price:
+        raise ValueError("Long price cannot be greater than or equal to Short price")
+
+    if short_strike >= long_strike:
+        raise ValueError("Short strike cannot be greater than or equal to Long strike")
 
     for closing_days in closing_days_array:
         if closing_days > days_to_expiration:
@@ -31,12 +34,12 @@ def shortStrangle(underlying, sigma, rate, trials, days_to_expiration,
         raise ValueError("closing_days_array and percentage_array sizes must be equal.")
 
     # SIMULATION
-    initial_credit = call_short_price + put_short_price  # Credit received from opening trade
+    initial_credit = short_price - long_price  # Credit received from opening trade
 
     percentage_array = [x / 100 for x in percentage_array]
     min_profit = [initial_credit * x for x in percentage_array]
 
-    strikes = [call_short_strike, put_short_strike]
+    strikes = [short_strike, long_strike]
 
     # LISTS TO NUMPY ARRAYS CUZ NUMBA HATES LISTS
     strikes = np.array(strikes)
@@ -44,7 +47,7 @@ def shortStrangle(underlying, sigma, rate, trials, days_to_expiration,
     min_profit = np.array(min_profit)
 
     try:
-        pop, pop_error, avg_dtc, avg_dtc_error = monteCarloNumba(underlying, rate, sigma, days_to_expiration,
+        pop, pop_error, avg_dtc, avg_dtc_error = monteCarlo(underlying, rate, sigma, days_to_expiration,
                                                               closing_days_array, trials,
                                                               initial_credit, min_profit, strikes, bsm_debit)
     except RuntimeError as err:

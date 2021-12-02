@@ -1,7 +1,7 @@
 from numba import jit
-from MonteCarloNumba import monteCarloNumba
+from MonteCarlo import monteCarlo
 import time
-from import_bs import blackscholescall
+from BlackScholes import blackscholescall
 import numpy as np
 
 
@@ -43,7 +43,7 @@ def coveredCall(underlying, sigma, rate, trials, days_to_expiration,
     min_profit = np.array(min_profit)
 
     try:
-        pop, pop_error, avg_dtc, avg_dtc_error = monteCarloNumba(underlying, rate, sigma, days_to_expiration,
+        pop, pop_error, avg_dtc, avg_dtc_error = monteCarlo(underlying, rate, sigma, days_to_expiration,
                                                               closing_days_array, trials,
                                                               initial_credit, min_profit, strikes, bsm_debit)
     except RuntimeError as err:

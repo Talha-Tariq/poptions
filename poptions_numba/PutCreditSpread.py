@@ -1,30 +1,30 @@
 from numba import jit
-from MonteCarloNumba import monteCarloNumba
+from MonteCarlo import monteCarlo
 import time
-from import_bs import blackscholescall
+from BlackScholes import blackscholesput
 import numpy as np
 
 
 @jit(nopython=True, cache=True)
 def bsm_debit(sim_price, strikes, rate, time_fraction, sigma):
-    P_short_calls = blackscholescall(sim_price, strikes[0], rate, time_fraction, sigma)
-    P_long_calls = blackscholescall(sim_price, strikes[1], rate, time_fraction, sigma)
+    P_short_puts = blackscholesput(sim_price, strikes[0], rate, time_fraction, sigma)
+    P_long_puts = blackscholesput(sim_price, strikes[1], rate, time_fraction, sigma)
 
-    debit = P_short_calls - P_long_calls
+    debit = P_short_puts - P_long_puts
 
     return debit
 
 
-def callCreditSpread(underlying, sigma, rate, trials, days_to_expiration,
-                     closing_days_array, percentage_array, short_strike,
-                     short_price, long_strike, long_price):
+def putCreditSpread(underlying, sigma, rate, trials, days_to_expiration,
+                    closing_days_array, percentage_array, short_strike,
+                    short_price, long_strike, long_price):
 
     # Data Verification
     if long_price >= short_price:
         raise ValueError("Long price cannot be greater than or equal to Short price")
 
-    if short_strike >= long_strike:
-        raise ValueError("Short strike cannot be greater than or equal to Long strike")
+    if short_strike <= long_strike:
+        raise ValueError("Short strike cannot be less than or equal to Long strike")
 
     for closing_days in closing_days_array:
         if closing_days > days_to_expiration:
@@ -47,7 +47,7 @@ def callCreditSpread(underlying, sigma, rate, trials, days_to_expiration,
     min_profit = np.array(min_profit)
 
     try:
-        pop, pop_error, avg_dtc, avg_dtc_error = monteCarloNumba(underlying, rate, sigma, days_to_expiration,
+        pop, pop_error, avg_dtc, avg_dtc_error = monteCarlo(underlying, rate, sigma, days_to_expiration,
                                                               closing_days_array, trials,
                                                               initial_credit, min_profit, strikes, bsm_debit)
     except RuntimeError as err:

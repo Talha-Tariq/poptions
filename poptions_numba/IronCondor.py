@@ -1,6 +1,6 @@
-from import_bs import blackscholesput, blackscholescall
+from BlackScholes import blackscholesput, blackscholescall
 from numba import jit
-from MonteCarloNumba import monteCarloNumba
+from MonteCarlo import monteCarlo
 import numpy as np
 import time
 
@@ -65,7 +65,7 @@ def ironCondor(underlying, sigma, rate, trials, days_to_expiration,
     min_profit = np.array(min_profit)
 
     try:
-        pop, pop_error, avg_dtc, avg_dtc_error = monteCarloNumba(underlying, rate, sigma, days_to_expiration,
+        pop, pop_error, avg_dtc, avg_dtc_error = monteCarlo(underlying, rate, sigma, days_to_expiration,
                                                               closing_days_array, trials,
                                                               initial_credit, min_profit, strikes, bsm_debit)
     except RuntimeError as err:

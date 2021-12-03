@@ -1,37 +1,40 @@
 from numba import jit
 from MonteCarlo import monteCarlo
 import time
-from BlackScholes import blackscholesput
+from BlackScholes import blackScholesCall
 import numpy as np
 
 
-@jit(nopython=True, cache=True)
 def bsm_debit(sim_price, strikes, rate, time_fraction, sigma):
-    P_long_puts = blackscholesput(sim_price, strikes[0], rate, time_fraction, sigma)
+    P_short_calls = blackScholesCall(sim_price, strikes[0], rate, time_fraction, sigma)
 
-    credit = P_long_puts
-    debit = -credit
+    debit = P_short_calls
+    credit = sim_price
+    debit = debit - credit
 
     return debit
 
 
-def longPut(underlying, sigma, rate, trials, days_to_expiration,
-            closing_days_array, multiple_array, long_strike, long_price):
+def coveredCall(underlying, sigma, rate, trials, days_to_expiration,
+                closing_days_array, percentage_array, short_strike, short_price):
 
     for closing_days in closing_days_array:
         if closing_days > days_to_expiration:
             raise ValueError("Closing days cannot be beyond Days To Expiration.")
 
-    if len(closing_days_array) != len(multiple_array):
-        raise ValueError("closing_days_array and multiple_array sizes must be equal.")
+    if len(closing_days_array) != len(percentage_array):
+        raise ValueError("closing_days_array and percentage_array sizes must be equal.")
 
     # SIMULATION
-    initial_debit = long_price  # Debit paid from opening trade
-    initial_credit = -1 * initial_debit
+    initial_credit = short_price  # Credit received from opening trade
+    stock_debit = underlying  # Assuming current underlying price = purchase price
+    initial_credit = initial_credit - stock_debit
 
-    min_profit = [initial_debit * x for x in multiple_array]
+    percentage_array = [x / 100 for x in percentage_array]
+    max_profit = short_price + (short_strike - underlying)
+    min_profit = [max_profit * x for x in percentage_array]
 
-    strikes = [long_strike]
+    strikes = [short_strike]
 
     # LISTS TO NUMPY ARRAYS CUZ NUMBA HATES LISTS
     strikes = np.array(strikes)

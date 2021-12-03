@@ -1,22 +1,26 @@
 from numba import jit
 from MonteCarlo import monteCarlo
 import time
-from BlackScholes import blackscholescall
+from BlackScholes import blackScholesCall, blackScholesPut
 import numpy as np
 
 
-@jit(nopython=True, cache=True)
 def bsm_debit(sim_price, strikes, rate, time_fraction, sigma):
-    P_long_calls = blackscholescall(sim_price, strikes[0], rate, time_fraction, sigma)
+    P_short_calls = blackScholesCall(sim_price, strikes[0], rate, time_fraction, sigma)
+    P_short_puts = blackScholesPut(sim_price, strikes[1], rate, time_fraction, sigma)
 
-    credit = P_long_calls
-    debit = -credit
+    debit = P_short_calls + P_short_puts
 
     return debit
 
 
-def longCall(underlying, sigma, rate, trials, days_to_expiration,
-             closing_days_array, percentage_array, long_strike, long_price):
+def shortStrangle(underlying, sigma, rate, trials, days_to_expiration,
+                  closing_days_array, percentage_array, call_short_strike,
+                  call_short_price, put_short_strike, put_short_price):
+
+    # Data Verification
+    if call_short_strike < put_short_strike:
+        raise ValueError("Call Strike cannot be less than Put Strike")
 
     for closing_days in closing_days_array:
         if closing_days > days_to_expiration:
@@ -26,12 +30,12 @@ def longCall(underlying, sigma, rate, trials, days_to_expiration,
         raise ValueError("closing_days_array and percentage_array sizes must be equal.")
 
     # SIMULATION
-    initial_debit = long_price  # Debit paid from opening trade
-    initial_credit = -1 * initial_debit
+    initial_credit = call_short_price + put_short_price  # Credit received from opening trade
 
-    min_profit = [initial_debit * x for x in percentage_array]
+    percentage_array = [x / 100 for x in percentage_array]
+    min_profit = [initial_credit * x for x in percentage_array]
 
-    strikes = [long_strike]
+    strikes = [call_short_strike, put_short_strike]
 
     # LISTS TO NUMPY ARRAYS CUZ NUMBA HATES LISTS
     strikes = np.array(strikes)

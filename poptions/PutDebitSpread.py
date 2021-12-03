@@ -1,14 +1,13 @@
 from numba import jit
 from MonteCarlo import monteCarlo
 import time
-from BlackScholes import blackscholesput
+from BlackScholes import blackScholesPut
 import numpy as np
 
 
-@jit(nopython=True, cache=True)
 def bsm_debit(sim_price, strikes, rate, time_fraction, sigma):
-    P_short_puts = blackscholesput(sim_price, strikes[0], rate, time_fraction, sigma)
-    P_long_puts = blackscholesput(sim_price, strikes[1], rate, time_fraction, sigma)
+    P_short_puts = blackScholesPut(sim_price, strikes[0], rate, time_fraction, sigma)
+    P_long_puts = blackScholesPut(sim_price, strikes[1], rate, time_fraction, sigma)
 
     credit = P_long_puts - P_short_puts
     debit = -credit

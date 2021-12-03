@@ -2,8 +2,7 @@ from numba import jit
 from math import log, sqrt, exp, erf
 
 
-@jit(nopython=True, cache=True)
-def blackscholesput(s, k, rr, tt, sd):
+def blackScholesPut(s, k, rr, tt, sd):
     if tt == 0 and (s / k > 1):
         p = 0
     elif tt == 0 and (s / k < 1):
@@ -19,8 +18,7 @@ def blackscholesput(s, k, rr, tt, sd):
     return p
 
 
-@jit(nopython=True, cache=True)
-def blackscholescall(s, k, rr, tt, sd):
+def blackScholesCall(s, k, rr, tt, sd):
     if tt == 0 and (s / k > 1):
         c = s - k
     elif tt == 0 and (s / k < 1):

@@ -2,6 +2,6 @@
 __pycache__/
 deprecated/
 venv/
-poptions_numba/poptions_single.py
+poptions/poptions_single.py
 
 

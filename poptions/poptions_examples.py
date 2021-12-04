@@ -1,5 +1,8 @@
 import poptions
 
+# Confused on what these variables mean? Read the README file!
+
+# Entering existing trades: See the READMe file.
 
 ################################################################
 
@@ -8,7 +11,7 @@ short_strike = 145      # Short strike price
 short_price = 1.13      # Short call price
 long_strike = 150
 long_price = 0.4
-rate = 0        # Annualized risk-free rate as a percentage
+rate = 0        # Annualized risk-free rate as a percentage (e.g. 1 year US Treasury Bill rate)
 sigma = 26.8        # Implied Volatility as a percentage
 days_to_expiration = 45     # Calendar days left till expiration
 percentage_array = [20, 30, 40]  # Percentage of maximum profit that will trigger the position to close

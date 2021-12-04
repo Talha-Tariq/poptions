@@ -1,7 +1,7 @@
 # poptions
 
 Custom Python code for calculating the Probability of Profit (POP) for options trading strategies using 
-Monte Carlo Simulations. The Monte Carlo Simulation runs thousands of individual of stock price simulations and 
+Monte Carlo Simulations. The Monte Carlo Simulation runs thousands of individual stock price simulations and 
 uses the data from these simulations to average out a POP number.
 
 Unlike other calculators,
@@ -9,10 +9,17 @@ poptions lets you specify a target profit, such as a percentage of maximum profi
 of the debit paid, that will trigger your
 position to close when it's reached in the simulation. Additionally, you will specify the 'closing days', which refers to the number of calendar 
 days that will pass until you close the position (assuming the target profit wasn't reached to trigger the 
-closing). You have the ability to add MULTIPLE combinations of target profits and closing days!
+closing). 
 
-The simulation also outputs an Average Days To Close (ADTC) number. This is the estimated average number of calendar 
-days you will have to wait until you reach your target profit, assuming that the probability of profit ended up in your favor.
+**In simpler words:** the estimated POP from poptions refers to the probability of hitting a specified target profit 
+within a specified number of calendar days. 
+
+Poptions lets you add MULTIPLE combinations of target profits and closing days!
+
+Poptions also outputs an Average Days To Close (ADTC) number. This is the estimated average number of calendar 
+days you will have to wait until you reach your target profit, **assuming that the POP ended up in your favor.**
+
+Poptions can also be used to evaluate existing trades (see below).
 
 *Disclaimer: poptions has not been vetted by any certified professional or expert. 
 The calculations do not constitute investment advice. They are for educational purposes only. 
@@ -40,8 +47,7 @@ poptions makes the following assumptions for its simulations:
  - Earnings date and stock splits are not considered.
 
 Of course, not all of these assumptions are true in real life and so there are limitations to this approach. For example, 
-it's highly unlikely that the stock price volatility remains constant for several days. 
-Thus, one should take these results with a grain of salt.
+it's highly unlikely that the stock price volatility remains constant for several days. Thus, one should take these results with a grain of salt.
 
 ## How to use poptions
 
@@ -68,7 +74,7 @@ print("Call Credit Spread: ", poptions.callCreditSpread(underlying, sigma, rate,
 The comments in the code should be self-explanatory, but the **percentage_array**, **closing_days_array**, and **trials** 
 variables require some extra clarification: 
 - The first elements in **percentage_array** and **closing_days_array** are 20 and 21, respectively.  
-This means that our target profit is 20% of maximum profit (0.2 * (1.13 - 0.4) = $ 0.146). The Monte 
+This means that our target profit is 20% of maximum profit (0.2 * (short_price - long_price) = $ 0.146). The Monte 
 Carlo Simulation will consider each individual simulation (renamed to **trial** here) a success if this 
 target profit is achieved. If this target profit is not reached within 21 calendar days, it will be considered 
 a failure.
@@ -81,21 +87,22 @@ to **percentage_array** and **closing_days_array**! In the above example, we tel
 
 *Some Extra Notes:*
 
-- Running poptions.callCreditSpread() will output values that have some variance from its previous run. This is
-because a new simulation is started from scratch. The amount of variance depends on how high **trials** is set. 
-  More trials -> higher accuracy (less variance).
+- Running poptions.callCreditSpread() will not output consistent results. There will always be some variance from its previous runs. This is
+because a new simulation is started from scratch for every run. The amount of variance depends on how high **trials** is set: 
+More trials -> higher accuracy (less variance).
 
 - For the Long Call and Long Put strategies, **percentage_array** is replaced with **multiple_array**. This means
 that the target profit is now defined as a multiple of the debit that you paid to open the position. For example, 
-  if you bought a call options for $1.00, a value of [2] in **multiple_array** means that your target profit is 
+  if you bought a call option for $1.00, a value of [2] in **multiple_array** means that your target profit is 
   2 * $ 1.00 = $ 2.00.
   
 - You can evaluate existing trades with poptions! Type the net credit received into ONE of the short price variables, 
   and leave the rest of the price variables at 0. Fill out all other variables with present data.
 Example: Net credit received was $0.73 for a Call Credit Spread, so **short_price** is 0.73 and **long_price** is 0. All other
-variables are filled with present data.
+variables are filled with present data. For strategies where a net debit is paid like Debit Spreads, the debit paid
+  should be in ONE of the *long* price variables, and leave the rest of the price variables at 0.
 
-*Entering existing trades is NOT supported for Covered Calls unless the current underlying price is the same as it was
+*Entering existing trades is NOT supported for **Covered Calls** unless the current underlying price is the same as it was
 when you opened the position! This is because the **underlying** variable refers to the purchase price of the stock
 when you opened the position.*
 
@@ -103,7 +110,7 @@ Running **poptions_examples.py** gives you the following output:
 ```
 Call Credit Spread:  {'pop': [61.3, 57.65, 52.55], 'pop_error': [2.81, 2.85, 2.88], 'avg_dtc': [8.87, 10.3, 11.41], 'avg_dtc_error': [0.39, 0.43, 0.45]}
 ``` 
-- **pop** is the probability of profit given the target profit and closing days. The first element in **pop** 
+- **pop** is the probability of reaching the target profit within the closing days. The first element in **pop** 
   corresponds to the first elements in **percentage_array** and **closing_days_array**.
   
 - **pop_error** is the error range for **pop**. In the above example, for the first element, 

@@ -21,6 +21,8 @@ days you will have to wait until you reach your target profit, **assuming that t
 
 Poptions can also be used to evaluate existing trades (see below).
 
+You can try out poptions by visiting the following website, which is powered by it: https://www.thetapopper.com/
+
 *Disclaimer: poptions has not been vetted by any certified professional or expert. 
 The calculations do not constitute investment advice. They are for educational purposes only. 
 Calculations may contain mistakes and are made using models with inherent limitations that are highlighted below.

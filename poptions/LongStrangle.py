@@ -1,21 +1,27 @@
 from numba import jit
 from MonteCarlo import monteCarlo
 import time
-from BlackScholes import blackScholesCall
+from BlackScholes import blackScholesCall, blackScholesPut
 import numpy as np
 
 
 def bsm_debit(sim_price, strikes, rate, time_fraction, sigma):
     P_long_calls = blackScholesCall(sim_price, strikes[0], rate, time_fraction, sigma)
+    P_long_puts = blackScholesPut(sim_price, strikes[1], rate, time_fraction, sigma)
 
-    credit = P_long_calls
+    credit = P_long_calls + P_long_puts
     debit = -credit
 
     return debit
 
 
-def longCall(underlying, sigma, rate, trials, days_to_expiration,
-             closing_days_array, multiple_array, long_strike, long_price):
+def longStrangle(underlying, sigma, rate, trials, days_to_expiration,
+                  closing_days_array, multiple_array, call_long_strike,
+                  call_long_price, put_long_strike, put_long_price):
+
+    # Data Verification
+    if call_long_strike < put_long_strike:
+        raise ValueError("Call Strike cannot be less than Put Strike")
 
     for closing_days in closing_days_array:
         if closing_days > days_to_expiration:
@@ -25,12 +31,12 @@ def longCall(underlying, sigma, rate, trials, days_to_expiration,
         raise ValueError("closing_days_array and multiple_array sizes must be equal.")
 
     # SIMULATION
-    initial_debit = long_price  # Debit paid from opening trade
+    initial_debit = call_long_price + put_long_price  # Debit paid from opening trade
     initial_credit = -1 * initial_debit
 
     min_profit = [initial_debit * x for x in multiple_array]
 
-    strikes = [long_strike]
+    strikes = [call_long_strike, put_long_strike]
 
     # LISTS TO NUMPY ARRAYS CUZ NUMBA HATES LISTS
     strikes = np.array(strikes)

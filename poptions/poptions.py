@@ -9,3 +9,4 @@ from LongCall import longCall
 from CoveredCall import coveredCall
 from IronCondor import ironCondor
 from ShortStrangle import shortStrangle
+from LongStrangle import longStrangle

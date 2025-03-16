@@ -21,7 +21,7 @@ days you will have to wait until you reach your target profit, **assuming that t
 
 Poptions can also be used to evaluate existing trades (see below).
 
-You can try out poptions by visiting the following website, which is powered by it: http://www.thetapopper.com/
+You can try out poptions by visiting the following website, which is powered by it: https://www.thetapopper.com/
 
 *Disclaimer: poptions has not been vetted by any certified professional or expert. 
 The calculations do not constitute investment advice. They are for educational purposes only. 
@@ -93,7 +93,7 @@ to **percentage_array** and **closing_days_array**! In the above example, we tel
 because a new simulation is started from scratch for every run. The amount of variance depends on how high **trials** is set: 
 More trials -> higher accuracy (less variance).
 
-- For the Long Call and Long Put strategies, **percentage_array** is replaced with **multiple_array**. This means
+- For the Long Call, Long Put, and Long Strangle strategies, **percentage_array** is replaced with **multiple_array**. This means
 that the target profit is now defined as a multiple of the debit that you paid to open the position. For example, 
   if you bought a call option for $1.00, a value of [2] in **multiple_array** means that your target profit is 
   2 * $ 1.00 = $ 2.00.

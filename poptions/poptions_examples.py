@@ -195,3 +195,20 @@ print("Call Credit Spread: ", poptions.callCreditSpread(underlying, sigma, rate,
 # print("Short Strangle: ", poptions.shortStrangle(underlying, sigma, rate, trials, days_to_expiration,
 #                     closing_days_array, percentage_array, call_short_strike,
 #                     call_short_price, put_short_strike, put_short_price))
+# ###############################################################
+
+# underlying = 198
+# call_long_strike = 210
+# call_long_price = 5.85
+# put_long_strike = 190
+# put_long_price = 7.08
+# rate = 0
+# sigma = 37
+# days_to_expiration = 47
+# multiple_array = [1]
+# closing_days_array = [24]
+# trials = 2000
+
+# print("Long Strangle: ", poptions.longStrangle(underlying, sigma, rate, trials, days_to_expiration,
+#                     closing_days_array, multiple_array, call_long_strike,
+#                     call_long_price, put_long_strike, put_long_price))
